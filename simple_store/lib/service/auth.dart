@@ -7,31 +7,24 @@ import 'package:simple_store/model/user.dart';
 import 'package:simple_store/model/user_creditials.dart';
 import '../model/login_response.dart';
 
-
-
-class Auth{
-
+class Auth {
   Future signOut(String token) async {
     try {
-      Map <String ,String> headers = {
-        'Authorization' : 'Bearer $token'
-      };
+      Map<String, String> headers = {'Authorization': 'Bearer $token'};
 
       final response = await http.post(
         Uri.parse(url + logoutPath),
         headers: headers,
-
       );
       print(response.body);
-      if (jsonDecode(response.body)['message'] != 'You have been successfully logged out!') {
+      if (jsonDecode(response.body)['message'] !=
+          'You have been successfully logged out!') {
         print('something went wrong');
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return null;
     }
-
   }
 
   Future signIn(String email, String password) async {
@@ -44,51 +37,55 @@ class Auth{
       if (jsonDecode(response.body)['message'] != null) {
         print('invalid credintials');
         return null;
-      }
-      else {
+      } else {
         LoginResponse loginResponse =
-        LoginResponse.fromJson(jsonDecode(response.body));
+            LoginResponse.fromJson(jsonDecode(response.body));
         return loginResponse;
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return null;
     }
   }
 
-
   Future getUser(String token) async {
-    Map <String ,String> headers = {
-      'Authorization' : 'Bearer $token'
-    };
-    final response = await http.get(
-        Uri.parse(url+getUserPath),
-        headers: headers
-    );
+    Map<String, String> headers = {'Authorization': 'Bearer $token'};
+    final response =
+        await http.get(Uri.parse(url + getUserPath), headers: headers);
     return (User.fromJson(jsonDecode(response.body)));
   }
 
-
   Future getAllProducts() async {
     final response = await http.get(
-        Uri.parse(url+getProductsPath),
+      Uri.parse(url + getProductsPath),
     );
-    List<Product> products = List<Product>.generate(jsonDecode(response.body).length, (index) {
+    List<Product> products =
+        List<Product>.generate(jsonDecode(response.body).length, (index) {
       return Product.fromJson(jsonDecode(response.body)[index]);
     });
     return products;
   }
 
+  Future getProductByID(int id, String token) async {
+    Map<String, String> headers = {'Authorization': 'Bearer $token'};
+
+    final response = await http.get(Uri.parse(url + getProductsPath + '$id'),
+        headers: headers);
+
+    Product product = Product.fromJson(jsonDecode(response.body));
+
+    return product;
+  }
+
   getProductsInCategory(int id) async {
-    final response = await http.get(Uri.parse(url+getCategoriesPath+'/$id/'));
+    final response =
+        await http.get(Uri.parse(url + getCategoriesPath + '/$id/'));
 
-
-    List<Product> products = List<Product>.generate(jsonDecode(response.body)['products'].length, (index) {
+    List<Product> products = List<Product>.generate(
+        jsonDecode(response.body)['products'].length, (index) {
       print(jsonDecode(response.body)['products'][index]);
       return Product.fromJson(jsonDecode(response.body)['products'][index]);
     });
-
 
     return products;
   }
@@ -97,19 +94,15 @@ class Auth{
     try {
       final response = await http.get(Uri.parse(url + getCategoriesPath));
 
-      List<Category> categories = List<Category>.generate(
-          jsonDecode(response.body).length, (index) {
+      List<Category> categories =
+          List<Category>.generate(jsonDecode(response.body).length, (index) {
         return Category.fromJson(jsonDecode(response.body)[index]);
       });
 
       return categories;
-    }
-    catch(e){
+    } catch (e) {
       print(e);
       return [];
     }
   }
-
-
-
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_store/model/products.dart';
 import 'package:simple_store/view/screens/cart_screen.dart';
 import 'package:simple_store/view/screens/home_screen.dart';
 import 'package:simple_store/view/screens/product_details.dart';
@@ -16,7 +17,11 @@ class RouteGenerator {
       //   return MaterialPageRoute(builder: (_) => const LoginScreen());
 
       case productDetails:
-        return MaterialPageRoute(builder: (_) => const ProductDetails());
+        if (args is Product) {
+          return MaterialPageRoute(builder: (_) => ProductDetails(product: args,));
+        }
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+
 
       case cartScreen:
         return MaterialPageRoute(builder: (_) => const CartScreen());
